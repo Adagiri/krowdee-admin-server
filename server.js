@@ -11,6 +11,7 @@ const server = new ApolloServer({
   resolvers,
   context: async ({ req }) => {
     await getUser(req);
+    console.log(req.userId)
     return { userId: req.userId };
   },
   formatError: (error) => {

@@ -2,91 +2,18 @@ import cors from "cors";
 import dotEnv from "dotenv";
 dotEnv.config();
 import express from "express";
-import Session from "express-session";
-import passport from "passport";
 
 import { connection } from "./database/utils/index.js";
-import passportConfig from "./utils/passport.js";
-import { socialAuth } from "./utils/socialProvidersAuth.js";
 import server from "./server.js";
 
-passportConfig();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(Session({ secret: process.env.SESSION || "keyboard cat", resave: true, saveUninitialized: true }));
-const PORT = process.env.PORT || 3000;
 
-app.use(passport.initialize());
-app.use(passport.session());
+const PORT = process.env.PORT || 6000;
 
-passport.serializeUser(function (user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function (obj, cb) {
-  cb(null, obj);
-});
-
-///////////////////////
-///////////////////////
-///////////////////////////
-
-//Facebook auth route
-app.get("/auth/facebook", passport.authenticate("facebook"));
-
-app.get(
-  "/auth/facebook/callback",
-  passport.authenticate("facebook", {
-    session: false,
-    failureRedirect: "/",
-  }),
-  socialAuth
-);
-
-//Google auth route
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/", session: false }),
-  socialAuth
-);
-
-//Github auth route
-app.get(
-  "/auth/github",
-  passport.authenticate("github", { scope: ["profile"] })
-);
-
-app.get(
-  "/auth/github/callback",
-  passport.authenticate("github", { failureRedirect: "/", session: false }),
-  socialAuth
-);
-
-//twitter auth route
-app.get(
-  "/auth/twitter",
-  passport.authenticate("twitter", { scope: ["profile"] })
-);
-
-app.get(
-  "/auth/twitter/callback",
-  passport.authenticate("twitter", { failureRedirect: "/", session: true }),
-  socialAuth
-);
-
-///////////////////////
-///////////////////////
-///////////////////////////
-
-server.applyMiddleware({ app, path: "/" });
-
+server.applyMiddleware({ app, path: "/graphql" });
 
 connection()
   .then(() => {
@@ -97,17 +24,15 @@ connection()
   .catch((error) => console.log(error));
 
 
-//   date = new Date('2013-08-03T02:00:00Z');
-// year = date.getFullYear();
-// month = date.getMonth()+1;
-// dt = date.getDate();
+  function makeid(length) {
+    var result           = [];
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result.push(characters.charAt(Math.floor(Math.random() * 
+ charactersLength)));
+   }
+   return result.join('');
+}
 
-// if (dt < 10) {
-//   dt = '0' + dt;
-// }
-// if (month < 10) {
-//   month = '0' + month;
-// }
-
-// console.log(date);
-// console.log(year+'-' + month + '-'+dt);
+console.log(makeid(9));

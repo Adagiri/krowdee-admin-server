@@ -1,10 +1,6 @@
 import GraphQLDateTime from "graphql-iso-date";
 import userResolvers from "./user.js";
-import contestResolvers from "./contest.js";
-import hostingResolvers from "./hosting.js";
-import precontestResolvers from "./precontest.js";
-import miscResolvers from "./misc.js";
-import contestLiveResolvers from "./contestLive.js";
+import tasksResolvers from "./tasks.js";
 
 const customDateScalarResolver = {
   Date: GraphQLDateTime,
@@ -12,10 +8,6 @@ const customDateScalarResolver = {
 
 export default [
   userResolvers,
-  contestResolvers,
-  hostingResolvers,
-  precontestResolvers,
-  contestLiveResolvers,
-  miscResolvers,
+  tasksResolvers,
   customDateScalarResolver,
 ];
