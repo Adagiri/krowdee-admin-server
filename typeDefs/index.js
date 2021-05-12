@@ -1,6 +1,7 @@
 import { gql } from "apollo-server-express";
 import userTypeDefs from "./user.js";
 import tasksTypeDefs from "./tasks.js";
+import hostingTypeDefs from "./hosting.js";
 
 const typeDefs = gql`
   scalar Date
@@ -17,5 +18,6 @@ const typeDefs = gql`
 export default [
   typeDefs,
   userTypeDefs,
-  tasksTypeDefs
+  tasksTypeDefs,
+  hostingTypeDefs
 ];
