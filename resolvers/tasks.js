@@ -1,26 +1,35 @@
 import jwt from "jsonwebtoken";
 
 import mongodb from "mongodb";
-const argsectID = mongodb.argsectID;
+const ObjectID = mongodb.ObjectID;
+
 import { combineResolvers } from "graphql-resolvers";
 import { isAuthenticated, verifyObjectId } from "./middleware/index.js";
 import { admin, templateTasks } from "../database/utils/injector.js";
+import { getSignedUrl } from "../aws/index.js";
 
 export default {
   Query: {
     getTasks: combineResolvers(
       isAuthenticated,
       async (_, { input }, { userId }) => {
-        const { cursor=1, limit=20, ...rest } = input;
+        const { cat = null, txt = null, cursor, limit = 20 } = input;
         let args = {};
-        for (const key in rest) {
-          if (rest[key] === null) {
-            return;
-          }
-          args[key] = rest[key];
-        }
+        if (cat) args.cat = cat.toLowerCase();
+
+        // console.log(cat.toLowerCase())
         try {
-          return await templateTasks.find({ ...args }).limit(cursor * limit).toArray()
+          if (txt) {
+            return await templateTasks
+              .find({ txt: { $regex: `${txt}`, $options: "i" }, ...args })
+              .limit(cursor * limit)
+              .toArray();
+          } else {
+            return await templateTasks
+              .find(args)
+              .limit(cursor * limit)
+              .toArray();
+          }
         } catch (error) {
           throw error;
         }
@@ -30,7 +39,7 @@ export default {
     searchTasks: combineResolvers(
       isAuthenticated,
       async (_, { input }, { userId }) => {
-        const { cursor=1, limit=20, txt, ...rest } = input;
+        const { cursor = 1, limit = 20, txt, ...rest } = input;
         let args = {};
         for (const key in rest) {
           if (rest[key] === null) {
@@ -39,20 +48,36 @@ export default {
           args[key] = rest[key];
         }
         try {
-          return await templateTasks.find({ txt: { $regex: `${txt}`, $options: "i" } ,...args }).limit(cursor * limit).toArray()
+          return await templateTasks
+            .find({ txt: { $regex: `${txt}`, $options: "i" }, ...args })
+            .limit(cursor * limit)
+            .toArray();
         } catch (error) {
           throw error;
         }
       }
     ),
+    getSignedUrl: combineResolvers(isAuthenticated, async (_, { input }) => {
+      const { _id, contentType } = input;
+      try {
+        const { url, key } = await getSignedUrl(_id, contentType);
+
+        return {
+          url,
+          key,
+        };
+      } catch (error) {
+        throw error;
+      }
+    }),
   },
 
   Mutation: {
     addTask: combineResolvers(
       isAuthenticated,
       async (_, { input }, { userId }) => {
-        const { force, ...rest } = input;
-
+        const { force, cat, ...rest } = input;
+        console.log(input);
         let taskExist = [];
         try {
           if (!force) {
@@ -63,11 +88,15 @@ export default {
           //search if question has not been added before
 
           if (taskExist.length > 0) {
-            return { taskToAdd: { ...rest }, taskExist, success: false };
+            return {
+              taskExist,
+              currentTask: input,
+              success: false,
+            };
           }
           //add question
 
-          const newTask = await templateTasks.insertOne({ ...rest });
+          const newTask = await templateTasks.insertOne({ ...rest, cat });
           if (newTask.result.ok === 1) {
             return { success: true };
           }
@@ -80,7 +109,7 @@ export default {
       isAuthenticated,
       async (_, { input }, { userId }) => {
         let { force, _id, ...rest } = input;
-
+        console.log(_id);
         let taskExist = [];
         try {
           if (!force && input.txt) {
@@ -91,12 +120,16 @@ export default {
           //search if question has not been added before
 
           if (taskExist.length > 0) {
-            return { taskToAdd: { ...rest }, taskExist, success: false };
+            return {
+              taskExist,
+              currentTask: input,
+              success: false,
+            };
           }
           //add question
 
           const editTask = await templateTasks.updateOne(
-            { _id: argsectID(_id) },
+            { _id: ObjectID(_id) },
             { $set: { ...rest } }
           );
           if (editTask.result.ok === 1) {
@@ -114,7 +147,7 @@ export default {
         let { _id } = input;
         try {
           const deleteTask = await templateTasks.deleteOne({
-            _id: argsectID(_id),
+            _id: ObjectID(_id),
           });
           if (deleteTask.result.ok === 1) {
             return true;

@@ -1,8 +1,3 @@
-
-host global contest
-edit hosted global contest
-unhost
-
-
-
-
+isAdmin model
+isWorker model
+users can get chance to add tasks

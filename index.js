@@ -6,9 +6,15 @@ import express from "express";
 import { connection } from "./database/utils/index.js";
 import server from "./server.js";
 
-
 const app = express();
-app.use(cors());
+// enable cors
+var corsOptions = {
+  origin: "http://localhost:3001",
+  "Access-Control-Allow-Credentials": "http://localhost:3001",
+  "Access-Control-Allow-Origin": true,
+  credentials: true, // <-- REQUIRED backend setting
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const PORT = process.env.PORT || 6000;
@@ -22,17 +28,3 @@ connection()
     });
   })
   .catch((error) => console.log(error));
-
-
-  function makeid(length) {
-    var result           = [];
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result.push(characters.charAt(Math.floor(Math.random() * 
- charactersLength)));
-   }
-   return result.join('');
-}
-
-console.log(makeid(9));

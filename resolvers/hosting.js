@@ -54,11 +54,11 @@ export default {
                 open.deleteOne({ _id: ObjectID(_id) }),
                 discussions.deleteOne({ contestId: ObjectID(_id) }),
               ];
-              await Promise.all(promises);
+              await Promise.all(promises);;
             } else {
               const participants = contest.participants.map(
                 (participant) => participant._id
-              );
+              );;
               // HOST THE open CONTEST, OPEN DISCUSSION & UPDATE USER DOC
               const promises = [
                 notifications.insertOne({

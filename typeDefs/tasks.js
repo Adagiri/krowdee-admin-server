@@ -3,8 +3,8 @@ import { gql } from "apollo-server-express";
 export default gql`
   extend type Query {
     getTasks(input: getTasksInput): [Task!]
-
     searchTasks(input: searchTasksInput): [Task!]
+    getSignedUrl(input: getSignedUrlInput): GetSignedUrlOutput!
   }
 
   extend type Mutation {
@@ -15,15 +15,14 @@ export default gql`
 
   input getTasksInput {
     cat: String
-    lvl: String
     cursor: Int
     limit: Int
+    txt: String
   }
 
   input searchTasksInput {
     txt: String!
     cat: String
-    lvl: String
     cursor: Int
     limit: Int
   }
@@ -34,7 +33,6 @@ export default gql`
     opts: [optionInput]!
     valid: String!
     cat: String!
-    lvl: String
     force: Boolean
   }
 
@@ -47,10 +45,9 @@ export default gql`
     _id: ID!
     txt: String
     img: String
-    opts: optionInput
+    opts:[ optionInput]!
     valid: String
     cat: String
-    lvl: String
     force: Boolean
   }
 
@@ -65,18 +62,27 @@ export default gql`
     opts: [Option]!
     valid: String!
     cat: String!
-    lvl: String
   }
 
   type AddTaskResponse {
-    taskToAdd: Task
     taskExist: [Task!]
     success: Boolean!
+    currentTask: Task
   }
 
   type Option {
     _id: String!
     opt: String!
+  }
+
+  input getSignedUrlInput {
+    _id: String!
+    contentType: String!
+  }
+
+  type GetSignedUrlOutput {
+    url: String!
+    key: String!
   }
 `;
 

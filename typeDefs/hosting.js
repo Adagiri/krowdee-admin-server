@@ -25,7 +25,6 @@ export default gql`
     end: String!
     valids: [validsInput]
     ranked: Boolean!
-    lvl: String!
   }
 
   input tasksInput {

@@ -5,6 +5,7 @@ const ObjectID = mongodb.ObjectID;
 import { combineResolvers } from "graphql-resolvers";
 import { isAuthenticated, verifyObjectId } from "./middleware/index.js";
 import { admin } from "../database/utils/injector.js";
+import { getSignedUrl } from "../aws/index.js";
 
 export default {
   Query: {
@@ -18,16 +19,18 @@ export default {
             throw new Error("user not found");
           }
 
-          return user;;
+          return user;
         } catch (error) {
           throw error;
         }
       }
     ),
+
+  
   },
 
   Mutation: {
-    login: async (_, { input }) => {
+    login: async (_, { input },{response}) => {
       const { username, password } = input;
       try {
         const user = await admin.findOne({ username });
@@ -40,7 +43,13 @@ export default {
 
         const secret = process.env.JWT_SECRET || "syrupsibridserver";
         const token = await jwt.sign({ userId: user._id }, secret, {
-          expiresIn: "1d",
+          expiresIn: "7d",
+        });
+
+        response.cookie('httptoken', token, {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          
         });
         return { token, user };
       } catch (error) {
