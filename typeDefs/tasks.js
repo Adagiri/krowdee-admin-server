@@ -44,6 +44,7 @@ export default gql`
   input editTaskInput {
     _id: ID!
     txt: String
+    prevTxt: String!
     img: String
     opts:[ optionInput]!
     valid: String

@@ -4,15 +4,14 @@ import resolvers from "./resolvers/index.js";
 import typeDefs from "./typeDefs/index.js";
 
 //apollo server configuration
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: async ({ req, res }) => {
     await getUser(req);
     // console.log(req.headers)
-    console.log(req.body)
-    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", process.env.CLIENT_URL);
 
     return { userId: req.userId, response: res };
   },

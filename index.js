@@ -9,15 +9,15 @@ import server from "./server.js";
 const app = express();
 // enable cors
 var corsOptions = {
-  origin: "http://localhost:3001",
-  "Access-Control-Allow-Credentials": "http://localhost:3001",
+  origin:  process.env.CLIENT_URL,
+  "Access-Control-Allow-Credentials":  process.env.CLIENT_URL,
   "Access-Control-Allow-Origin": true,
   credentials: true, // <-- REQUIRED backend setting
 };
 app.use(cors(corsOptions));
 app.use(express.json());
 
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 9000;
 
 server.applyMiddleware({ app, path: "/graphql" });
 
