@@ -21,6 +21,10 @@ const PORT = process.env.PORT || 9000;
 
 server.applyMiddleware({ app, path: "/graphql" });
 
+app.get("/", (req, res, next) => {
+  res.send("howdy fellas");
+});
+
 connection()
   .then(() => {
     app.listen(PORT, () => {
