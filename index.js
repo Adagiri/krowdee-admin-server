@@ -9,8 +9,8 @@ import server from "./server.js";
 const app = express();
 // enable cors
 var corsOptions = {
-  origin:  process.env.CLIENT_URL,
-  "Access-Control-Allow-Credentials":  process.env.CLIENT_URL,
+  origin: [process.env.CLIENT_URL],
+  "Access-Control-Allow-Credentials": process.env.CLIENT_URL,
   "Access-Control-Allow-Origin": true,
   credentials: true, // <-- REQUIRED backend setting
 };

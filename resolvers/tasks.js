@@ -91,7 +91,6 @@ export default {
         console.log(_id);
         let taskExist = [];
         try {
-       
           if (force === false && input.txt !== input.prevTxt) {
             taskExist = await templateTasks
               .find({ $text: { $search: `\"${input.txt}\"` } })

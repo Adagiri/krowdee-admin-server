@@ -10,7 +10,7 @@ const server = new ApolloServer({
   context: async ({ req, res }) => {
     await getUser(req);
     // console.log(req.headers)
-    console.log(req.body);
+    console.log(req.headers);
     res.header("Access-Control-Allow-Origin", process.env.CLIENT_URL);
 
     return { userId: req.userId, response: res };

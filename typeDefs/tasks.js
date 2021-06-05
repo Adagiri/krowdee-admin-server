@@ -46,7 +46,7 @@ export default gql`
     txt: String
     prevTxt: String!
     img: String
-    opts:[ optionInput]!
+    opts: [optionInput]!
     valid: String
     cat: String
     force: Boolean
