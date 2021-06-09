@@ -4,7 +4,7 @@ export let closed;
 export let discussions;
 export let notifications;
 export let globalNotifications;
-export let templateTasks;
+export let library;
 export let admin;
 
 export const injectDB = async (conn) => {
@@ -19,7 +19,7 @@ export const injectDB = async (conn) => {
       conn.db(process.env.KROWDEE_DB).collection("discussions"),
       conn.db(process.env.KROWDEE_DB).collection("notifications"),
       conn.db(process.env.KROWDEE_DB).collection("global_notifications"),
-      conn.db(process.env.KROWDEE_DB).collection("template_tasks"),
+      conn.db(process.env.KROWDEE_DB).collection("library"),
       conn.db(process.env.KROWDEE_DB).collection("admin"),
     ];
 
@@ -30,7 +30,7 @@ export const injectDB = async (conn) => {
       discussions = data[3];
       notifications = data[4];
       globalNotifications = data[5];
-      templateTasks = data[6];
+      library = data[6];
       admin = data[7];
     });
 

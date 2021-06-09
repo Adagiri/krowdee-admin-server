@@ -5,7 +5,7 @@ const ObjectID = mongodb.ObjectID;
 
 import { combineResolvers } from "graphql-resolvers";
 import { isAuthenticated, verifyObjectId } from "./middleware/index.js";
-import { admin, templateTasks } from "../database/utils/injector.js";
+import { admin, library } from "../database/utils/injector.js";
 import { getSignedUrl } from "../aws/index.js";
 
 export default {
@@ -20,12 +20,12 @@ export default {
         // console.log(cat.toLowerCase())
         try {
           if (txt) {
-            return await templateTasks
-              .find({ txt: { $regex: `${txt}`, $options: "i" }, ...args })
+            return await library
+              .find({ txt: { $regex: `${txt}`, $options: "i" }, ...args, cat })
               .limit(cursor * limit)
               .toArray();
           } else {
-            return await templateTasks
+            return await library
               .find(args)
               .limit(cursor * limit)
               .toArray();
@@ -60,7 +60,7 @@ export default {
         let taskExist = [];
         try {
           if (force === false) {
-            taskExist = await templateTasks
+            taskExist = await library
               .find({ $text: { $search: `\"${input.txt}\"` } })
               .toArray();
           }
@@ -75,7 +75,11 @@ export default {
           }
           //add question
 
-          const newTask = await templateTasks.insertOne({ ...rest, cat });
+          const newTask = await library.insertOne({
+            ...rest,
+            cat: cat.map((cat) => cat.toLowerCase()),
+            date: new Date(),
+          });
           if (newTask.result.ok === 1) {
             return { success: true };
           }
@@ -92,7 +96,7 @@ export default {
         let taskExist = [];
         try {
           if (force === false && input.txt !== input.prevTxt) {
-            taskExist = await templateTasks
+            taskExist = await library
               .find({ $text: { $search: `\"${input.txt}\"` } })
               .toArray();
           }
@@ -107,7 +111,7 @@ export default {
           }
           //add question
 
-          const editTask = await templateTasks.updateOne(
+          const editTask = await library.updateOne(
             { _id: ObjectID(_id) },
             { $set: { ...rest } }
           );
@@ -125,7 +129,7 @@ export default {
       async (_, { input }, { userId }) => {
         let { _id } = input;
         try {
-          const deleteTask = await templateTasks.deleteOne({
+          const deleteTask = await library.deleteOne({
             _id: ObjectID(_id),
           });
           if (deleteTask.result.ok === 1) {

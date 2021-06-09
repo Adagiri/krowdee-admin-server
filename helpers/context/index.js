@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import cookie from "js-cookie";
 import mongodb from "mongodb";
 const ObjectID = mongodb.ObjectID;
 

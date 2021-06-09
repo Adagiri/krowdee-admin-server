@@ -3,7 +3,6 @@ import { gql } from "apollo-server-express";
 export default gql`
   extend type Query {
     getTasks(input: getTasksInput): [Task!]
-    searchTasks(input: searchTasksInput): [Task!]
     getSignedUrl(input: getSignedUrlInput): GetSignedUrlOutput!
   }
 
@@ -20,19 +19,15 @@ export default gql`
     txt: String
   }
 
-  input searchTasksInput {
-    txt: String!
-    cat: String
-    cursor: Int
-    limit: Int
-  }
-
   input addTaskInput {
+    author: String!
     txt: String!
+    exp: String
+    ref: String
     img: String
     opts: [optionInput]!
     valid: String!
-    cat: String!
+    cat: [String!]!
     force: Boolean
   }
 
@@ -43,12 +38,15 @@ export default gql`
 
   input editTaskInput {
     _id: ID!
+    author: String
     txt: String
+    exp: String
+    ref: String
     prevTxt: String!
     img: String
-    opts: [optionInput]!
+    opts: [optionInput]
     valid: String
-    cat: String
+    cat: [String!]
     force: Boolean
   }
 
@@ -58,11 +56,15 @@ export default gql`
 
   type Task {
     _id: ID!
+    author: String!
     txt: String!
     img: String
     opts: [Option]!
     valid: String!
-    cat: String!
+    cat: [String!]!
+    exp: String
+    ref: String
+    date: String!
   }
 
   type AddTaskResponse {
